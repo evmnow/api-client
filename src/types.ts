@@ -8,14 +8,16 @@ export interface EvmNowApiOptions {
 
 export interface TokenImageResponse {
   cdn: string
+  key: string
   sizes: TokenImageSize[]
+}
+
+export type TokenImage = TokenImageResponse & {
   xs?: string
   sm?: string
   md?: string
   lg?: string
 }
-
-export type TokenImage = TokenImageResponse
 
 export interface TokenImageResponseResult {
   name: string | null

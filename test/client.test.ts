@@ -18,8 +18,8 @@ describe('evmNowApi', () => {
           description: 'Example token',
           image: {
             cdn: 'cdn-1',
+            key: 'cid',
             sizes: ['sm'],
-            sm: 'https://cdn.example.test/tokens/cid_sm.webp',
           },
         })
       },
@@ -37,7 +37,8 @@ describe('evmNowApi', () => {
       'https://api.example.test/tokens/0x0000000000000000000000000000000000000000/1?refresh=true',
     )
     expect(requestedAuthorization).toBe('Bearer test-key')
-    expect(token.image?.sm).toBe('https://cdn.example.test/tokens/cid_sm.webp')
+    expect(token.image?.key).toBe('cid')
+    expect(token.image?.sm).toBe('https://cdn.evm.now/tokens/cid_sm.webp')
   })
 
   it('unwraps legacy data envelopes when present', async () => {

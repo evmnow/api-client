@@ -2,7 +2,7 @@ import { evmNowApi } from '../src/index'
 import { EvmNowApiError } from '../src/client'
 
 describe('evmNowApi', () => {
-  it('requests token metadata and returns API image URLs directly', async () => {
+  it('requests token metadata and derives image URLs', async () => {
     let requestedUrl: string | null = null
     let requestedAuthorization: string | null = null
 
@@ -17,7 +17,6 @@ describe('evmNowApi', () => {
           name: 'Token #1',
           description: 'Example token',
           image: {
-            cdn: 'cdn-1',
             key: 'cid',
             sizes: ['sm'],
           },

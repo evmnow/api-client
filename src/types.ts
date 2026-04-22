@@ -7,7 +7,6 @@ export interface EvmNowApiOptions {
 }
 
 export interface TokenImageResponse {
-  cdn: string
   key: string
   sizes: TokenImageSize[]
 }

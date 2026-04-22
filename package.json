@@ -1,6 +1,6 @@
 {
   "name": "@evmnow/api-client",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "TypeScript client for the EVM Now API.",
   "license": "MIT",
   "repository": {

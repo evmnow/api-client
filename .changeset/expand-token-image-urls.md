@@ -2,4 +2,4 @@
 '@evmnow/api-client': patch
 ---
 
-Expand token image keys returned by the API into CDN URLs for each available size.
+Expand compact token image responses into CDN URLs for each available size. Token images now use the API response shape `{ key, sizes }`.

@@ -14,9 +14,7 @@ export { EvmNowApiError } from './client.js'
 export type {
   EvmNowApiOptions,
   TokenImage,
-  TokenImageOptions,
-  TokenImageResponse,
-  TokenImageResponseResult,
-  TokenImageResult,
   TokenImageSize,
+  TokenMetadata,
+  TokenMetadataOptions,
 } from './types.js'

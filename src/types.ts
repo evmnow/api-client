@@ -6,30 +6,16 @@ export interface EvmNowApiOptions {
   fetch?: typeof fetch
 }
 
-export interface TokenImageResponse {
-  key: string
-  sizes: TokenImageSize[]
-}
+export type TokenImage = Partial<Record<TokenImageSize, string>>
 
-export type TokenImage = TokenImageResponse & {
-  xs?: string
-  sm?: string
-  md?: string
-  lg?: string
-}
-
-export interface TokenImageResponseResult {
+export interface TokenMetadata {
   name: string | null
   description: string | null
-  image: TokenImageResponse | null
-}
-
-export interface TokenImageResult {
-  name: string | null
-  description: string | null
+  tokenUri: string | null
+  sourceImageUri: string | null
   image: TokenImage | null
 }
 
-export interface TokenImageOptions {
+export interface TokenMetadataOptions {
   refresh?: boolean
 }

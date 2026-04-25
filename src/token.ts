@@ -1,41 +1,59 @@
 import type { ApiClient } from './client.js'
 import type {
-  TokenImageOptions,
-  TokenImageResponseResult,
-  TokenImageResult,
+  TokenImage,
+  TokenImageSize,
+  TokenMetadata,
+  TokenMetadataOptions,
 } from './types.js'
 
+interface TokenImageWire {
+  key: string
+  sizes: TokenImageSize[]
+}
+
+interface TokenMetadataWire {
+  name: string | null
+  description: string | null
+  tokenUri: string | null
+  sourceImageUri: string | null
+  image: TokenImageWire | null
+}
+
 export interface TokenApi {
-  image(
+  metadata(
     contractAddress: string,
     tokenId: string | number | bigint,
-    options?: TokenImageOptions,
-  ): Promise<TokenImageResult>
+    options?: TokenMetadataOptions,
+  ): Promise<TokenMetadata>
 }
 
 export function createTokenApi(client: ApiClient): TokenApi {
-  function imageUrl(key: string, size: string) {
+  function imageUrl(key: string, size: TokenImageSize) {
     return `https://cdn.evm.now/tokens/${key}_${size}.webp`
   }
 
-  function withImageUrls(token: TokenImageResponseResult): TokenImageResult {
-    if (!token.image) return token
-
-    const image: NonNullable<TokenImageResult['image']> = { ...token.image }
-    for (const size of token.image.sizes) {
-      image[size] = imageUrl(token.image.key, size)
+  function expandImage(image: TokenImageWire | null): TokenImage | null {
+    if (!image) return null
+    const expanded: TokenImage = {}
+    for (const size of image.sizes) {
+      expanded[size] = imageUrl(image.key, size)
     }
-
-    return { ...token, image }
+    return expanded
   }
 
   return {
-    async image(contractAddress, tokenId, options = {}) {
-      const token = await client.get<TokenImageResponseResult>(
+    async metadata(contractAddress, tokenId, options = {}) {
+      const wire = await client.get<TokenMetadataWire>(
         `/tokens/${contractAddress}/${tokenId.toString()}`,
         { refresh: options.refresh || undefined },
       )
-      return withImageUrls(token)
+      return {
+        name: wire.name,
+        description: wire.description,
+        tokenUri: wire.tokenUri,
+        sourceImageUri: wire.sourceImageUri,
+        image: expandImage(wire.image),
+      }
     },
   }
 }

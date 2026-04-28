@@ -16,10 +16,17 @@ export interface TokenMetadata {
   image: TokenImage | null
 }
 
-export interface TokenMetadataOptions {
+export type TokenMetadataResponse =
+  | { status: 'ready'; data: TokenMetadata }
+  | { status: 'pending'; data: TokenMetadata }
+
+export interface TokenMetadataFetchOptions {
   refresh?: boolean
+  signal?: AbortSignal
+}
+
+export interface TokenMetadataOptions extends TokenMetadataFetchOptions {
   pollIntervalMs?: number
   maxWaitMs?: number
-  signal?: AbortSignal
   onPending?: (partial: TokenMetadata) => void
 }

@@ -239,3 +239,79 @@ describe('token.metadata', () => {
     expect(elapsed).toBeGreaterThanOrEqual(45)
   })
 })
+
+describe('token.fetchMetadata', () => {
+  it('returns the discriminated ready response without polling', async () => {
+    const { fetcher, callCount } = queueResponses(
+      { status: 'ready', data: readyData },
+      { status: 'ready', data: readyData },
+    )
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    const response = await api.token.fetchMetadata(CONTRACT, 1)
+
+    expect(callCount()).toBe(1)
+    expect(response.status).toBe('ready')
+    expect(response.data.name).toBe('Ready')
+    expect(response.data.image).toEqual({
+      sm: 'https://cdn.evm.now/tokens/cid_sm.webp',
+    })
+  })
+
+  it('returns pending without throwing', async () => {
+    const { fetcher, callCount } = queueResponses({
+      status: 'pending',
+      data: pendingData,
+    })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    const response = await api.token.fetchMetadata(CONTRACT, 1)
+
+    expect(callCount()).toBe(1)
+    expect(response.status).toBe('pending')
+    expect(response.data.name).toBe('Pending')
+    expect(response.data.image).toBeNull()
+  })
+
+  it('throws EvmNowApiError on status: error', async () => {
+    const { fetcher } = queueResponses({
+      status: 'error',
+      data: null,
+      error: 'Token metadata does not include a static image',
+    })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    await expect(api.token.fetchMetadata(CONTRACT, 1)).rejects.toMatchObject({
+      name: 'EvmNowApiError',
+      message: 'Token metadata does not include a static image',
+    })
+  })
+
+  it('passes refresh through as a query param', async () => {
+    const { fetcher, calls } = queueResponses({
+      status: 'ready',
+      data: readyData,
+    })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    await api.token.fetchMetadata(CONTRACT, 1, { refresh: true })
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].url).toContain('refresh=true')
+  })
+
+  it('rejects when the signal is already aborted', async () => {
+    const { fetcher, callCount } = queueResponses({
+      status: 'ready',
+      data: readyData,
+    })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+    const controller = new AbortController()
+    controller.abort()
+
+    await expect(
+      api.token.fetchMetadata(CONTRACT, 1, { signal: controller.signal }),
+    ).rejects.toMatchObject({ name: 'AbortError' })
+    expect(callCount()).toBe(0)
+  })
+})

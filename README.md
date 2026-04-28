@@ -35,6 +35,31 @@ const token = await api.token.metadata(contract, tokenId, {
 
 Set `maxWaitMs: 0` to make a single request with no polling.
 
+### Single-shot mode (`fetchMetadata`)
+
+When you want to drive polling yourself — e.g. a frontend that polls a
+proxy endpoint and renders the partial response while waiting — use
+`fetchMetadata`. It makes exactly one request and returns a
+discriminated union, never throwing on a pending response.
+
+```ts
+import type { TokenMetadataResponse } from '@evmnow/api-client'
+
+const response: TokenMetadataResponse = await api.token.fetchMetadata(
+  contract,
+  tokenId,
+)
+
+if (response.status === 'ready') {
+  // response.data.image is populated.
+} else {
+  // status === 'pending' — render response.data.name / sourceImageUri,
+  // then call fetchMetadata again later.
+}
+```
+
+`metadata()` is implemented as a polling wrapper around `fetchMetadata`.
+
 ### Errors
 
 - `EvmNowApiError` — thrown for HTTP errors and when the server returns

@@ -3,7 +3,9 @@ import type {
   TokenImage,
   TokenImageSize,
   TokenMetadata,
+  TokenMetadataFetchOptions,
   TokenMetadataOptions,
+  TokenMetadataResponse,
 } from './types.js'
 
 interface TokenImageReadyWire {
@@ -45,6 +47,23 @@ export class EvmNowMetadataPendingError extends EvmNowApiError {
 }
 
 export interface TokenApi {
+  /**
+   * Single-shot metadata request. Returns a discriminated union with the
+   * server's `status` (`'ready'` or `'pending'`) and the current data.
+   * Use this when you want to drive polling yourself (e.g. a frontend that
+   * polls a proxy and renders the partial `data` while waiting).
+   */
+  fetchMetadata(
+    contractAddress: string,
+    tokenId: string | number | bigint,
+    options?: TokenMetadataFetchOptions,
+  ): Promise<TokenMetadataResponse>
+
+  /**
+   * Polls until the image is cached or `maxWaitMs` is exhausted. Throws
+   * `EvmNowMetadataPendingError` (with the last partial on `.lastData`)
+   * on timeout.
+   */
   metadata(
     contractAddress: string,
     tokenId: string | number | bigint,
@@ -76,7 +95,27 @@ export function createTokenApi(client: ApiClient): TokenApi {
     }
   }
 
+  async function fetchMetadata(
+    contractAddress: string,
+    tokenId: string | number | bigint,
+    options: TokenMetadataFetchOptions = {},
+  ): Promise<TokenMetadataResponse> {
+    throwIfAborted(options.signal)
+
+    const path = `/tokens/${contractAddress}/${tokenId.toString()}`
+    const query = { refresh: options.refresh || undefined }
+    const wire = await client.get<MetadataResponseWire>(path, query)
+
+    if (wire.status === 'error') {
+      throw new EvmNowApiError(wire.error, 0, wire)
+    }
+
+    return { status: wire.status, data: transform(wire.data) }
+  }
+
   return {
+    fetchMetadata,
+
     async metadata(contractAddress, tokenId, options = {}) {
       const {
         refresh,
@@ -86,30 +125,23 @@ export function createTokenApi(client: ApiClient): TokenApi {
         onPending,
       } = options
 
-      const path = `/tokens/${contractAddress}/${tokenId.toString()}`
-      const query = { refresh: refresh || undefined }
       const start = Date.now()
       let attempts = 0
 
       while (true) {
-        throwIfAborted(signal)
-
-        const wire = await client.get<MetadataResponseWire>(path, query)
+        const response = await fetchMetadata(contractAddress, tokenId, {
+          refresh,
+          signal,
+        })
         attempts++
 
-        if (wire.status === 'error') {
-          throw new EvmNowApiError(wire.error, 0, wire)
-        }
+        if (response.status === 'ready') return response.data
 
-        const data = transform(wire.data)
-
-        if (wire.status === 'ready') return data
-
-        onPending?.(data)
+        onPending?.(response.data)
 
         const remaining = maxWaitMs - (Date.now() - start)
         if (remaining <= 0) {
-          throw new EvmNowMetadataPendingError(data, attempts)
+          throw new EvmNowMetadataPendingError(response.data, attempts)
         }
 
         await sleep(Math.min(pollIntervalMs, remaining), signal)

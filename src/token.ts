@@ -118,7 +118,6 @@ export function createTokenApi(client: ApiClient): TokenApi {
 
     async metadata(contractAddress, tokenId, options = {}) {
       const {
-        refresh,
         pollIntervalMs = DEFAULT_POLL_INTERVAL_MS,
         maxWaitMs = DEFAULT_MAX_WAIT_MS,
         signal,
@@ -129,10 +128,7 @@ export function createTokenApi(client: ApiClient): TokenApi {
       let attempts = 0
 
       while (true) {
-        const response = await fetchMetadata(contractAddress, tokenId, {
-          refresh,
-          signal,
-        })
+        const response = await fetchMetadata(contractAddress, tokenId, options)
         attempts++
 
         if (response.status === 'ready') return response.data

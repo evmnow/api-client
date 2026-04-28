@@ -20,9 +20,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "examples",
     "src",
-    ".env.example",
     "README.md",
     "LICENSE"
   ],

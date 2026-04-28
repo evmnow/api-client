@@ -23,8 +23,9 @@ const api = evmNowApi({ key: apiKey })
 
 try {
   const token = await api.token.metadata(contractAddress, tokenId, {
-    onPending: () => {
-      console.error('Token metadata is pending. Waiting for the API to finish.')
+    onPending: (partial) => {
+      console.error('Token metadata is pending. Partial data so far:')
+      console.error(JSON.stringify(partial, null, 2))
     },
   })
 

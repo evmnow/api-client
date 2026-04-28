@@ -2,7 +2,8 @@
 
 import { EvmNowApiError, evmNowApi } from '@evmnow/api-client'
 
-const [contractAddressArg, tokenIdArg] = process.argv.slice(2)
+const args = process.argv.slice(2).filter((arg) => arg !== '--')
+const [contractAddressArg, tokenIdArg] = args
 
 const apiKey = process.env.EVM_NOW_API_KEY
 const contractAddress = contractAddressArg ?? process.env.TOKEN_CONTRACT_ADDRESS

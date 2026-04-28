@@ -64,7 +64,8 @@ try {
 
 ## Examples
 
-Copy `.env.example` to `.env` and set `EVM_NOW_API_KEY`.
+In a repository checkout, copy `.env.example` to `.env` and set
+`EVM_NOW_API_KEY`.
 
 ```sh
 pnpm example:fetch-token-metadata -- 0x3b3ee1931dc30c1957379fac9aba94d1c48a5405 77879

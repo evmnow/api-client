@@ -20,12 +20,15 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "examples",
     "src",
+    ".env.example",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "vite build",
+    "example:fetch-token-metadata": "pnpm build && node --env-file-if-exists=.env examples/fetch-token-metadata.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",

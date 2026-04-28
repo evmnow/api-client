@@ -14,13 +14,16 @@ describe('evmNowApi', () => {
         requestedAuthorization = new Headers(init?.headers).get('authorization')
 
         return Response.json({
-          name: 'Token #1',
-          description: 'Example token',
-          tokenUri: 'ipfs://bafy.../1',
-          sourceImageUri: 'ipfs://bafy.../1.png',
-          image: {
-            key: 'cid',
-            sizes: ['sm'],
+          status: 'ready',
+          data: {
+            name: 'Token #1',
+            description: 'Example token',
+            tokenUri: 'ipfs://bafy.../1',
+            sourceImageUri: 'ipfs://bafy.../1.png',
+            image: {
+              key: 'cid',
+              sizes: ['sm'],
+            },
           },
         })
       },
@@ -46,32 +49,6 @@ describe('evmNowApi', () => {
       image: {
         sm: 'https://cdn.evm.now/tokens/cid_sm.webp',
       },
-    })
-  })
-
-  it('unwraps legacy data envelopes when present', async () => {
-    const api = evmNowApi({
-      key: 'test-key',
-      fetch: async () =>
-        Response.json({
-          data: {
-            name: 'Wrapped token',
-            description: null,
-            tokenUri: null,
-            sourceImageUri: null,
-            image: null,
-          },
-        }),
-    })
-
-    await expect(
-      api.token.metadata('0x0000000000000000000000000000000000000000', 1),
-    ).resolves.toEqual({
-      name: 'Wrapped token',
-      description: null,
-      tokenUri: null,
-      sourceImageUri: null,
-      image: null,
     })
   })
 

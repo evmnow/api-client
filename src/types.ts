@@ -18,4 +18,8 @@ export interface TokenMetadata {
 
 export interface TokenMetadataOptions {
   refresh?: boolean
+  pollIntervalMs?: number
+  maxWaitMs?: number
+  signal?: AbortSignal
+  onPending?: (partial: TokenMetadata) => void
 }

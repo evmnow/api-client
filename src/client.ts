@@ -85,10 +85,6 @@ export function createApiClient(options: EvmNowApiOptions): ApiClient {
         )
       }
 
-      if (body && typeof body === 'object' && 'data' in body) {
-        return (body as { data: T }).data
-      }
-
       return body as T
     },
   }

@@ -11,6 +11,7 @@ export function evmNowApi(options: EvmNowApiOptions) {
 }
 
 export { EvmNowApiError } from './client.js'
+export { EvmNowMetadataPendingError } from './token.js'
 export type {
   EvmNowApiOptions,
   TokenImage,

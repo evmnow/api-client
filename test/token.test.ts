@@ -10,6 +10,7 @@ const readyData = {
   description: 'desc',
   tokenUri: 'ipfs://t/1',
   sourceImageUri: 'ipfs://i/1.png',
+  sourceAnimationUri: 'ipfs://a/1.mp4',
   image: { key: 'cid', sizes: ['sm'] as const },
 }
 
@@ -18,6 +19,7 @@ const pendingData = {
   description: 'desc',
   tokenUri: 'ipfs://t/1',
   sourceImageUri: 'ipfs://i/1.png',
+  sourceAnimationUri: 'ipfs://a/1.mp4',
   image: { status: 'pending' as const, key: 'cid' },
 }
 
@@ -45,6 +47,7 @@ describe('token.metadata', () => {
 
     expect(callCount()).toBe(1)
     expect(token.name).toBe('Ready')
+    expect(token.sourceAnimationUri).toBe('ipfs://a/1.mp4')
     expect(token.image).toEqual({
       sm: 'https://cdn.evm.now/tokens/cid_sm.webp',
     })
@@ -53,7 +56,12 @@ describe('token.metadata', () => {
   it('returns ready immediately when token has no image', async () => {
     const { fetcher, callCount } = queueResponses({
       status: 'ready',
-      data: { ...readyData, sourceImageUri: null, image: null },
+      data: {
+        ...readyData,
+        sourceImageUri: null,
+        sourceAnimationUri: null,
+        image: null,
+      },
     })
     const api = evmNowApi({ key: 'k', fetch: fetcher })
 
@@ -62,6 +70,25 @@ describe('token.metadata', () => {
     expect(callCount()).toBe(1)
     expect(token.image).toBeNull()
     expect(token.sourceImageUri).toBeNull()
+    expect(token.sourceAnimationUri).toBeNull()
+  })
+
+  it('returns null for sourceAnimationUri when the API omits it', async () => {
+    const { fetcher } = queueResponses({
+      status: 'ready',
+      data: {
+        name: 'Ready',
+        description: 'desc',
+        tokenUri: 'ipfs://t/1',
+        sourceImageUri: 'ipfs://i/1.png',
+        image: { key: 'cid', sizes: ['sm'] as const },
+      },
+    })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    const token = await api.token.metadata(CONTRACT, 1)
+
+    expect(token.sourceAnimationUri).toBeNull()
   })
 
   it('polls until ready', async () => {
@@ -105,6 +132,7 @@ describe('token.metadata', () => {
       description: 'desc',
       tokenUri: 'ipfs://t/1',
       sourceImageUri: 'ipfs://i/1.png',
+      sourceAnimationUri: 'ipfs://a/1.mp4',
       image: null,
     })
   })

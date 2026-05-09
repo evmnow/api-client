@@ -12,6 +12,7 @@ const token = await api.token.metadata(
 console.log(token.name)
 console.log(token.tokenUri)
 console.log(token.sourceImageUri)
+console.log(token.sourceAnimationUri)
 console.log(token.image?.sm)
 ```
 
@@ -27,7 +28,8 @@ const token = await api.token.metadata(contract, tokenId, {
   maxWaitMs: 60_000,
   signal: controller.signal,
   onPending: (partial) => {
-    // Render `partial.name` and `partial.sourceImageUri` while waiting.
+    // Render `partial.name`, `partial.sourceImageUri`, and
+    // `partial.sourceAnimationUri` while waiting.
     // `partial.image` is null until the cache catches up.
   },
 })
@@ -53,8 +55,8 @@ const response: TokenMetadataResponse = await api.token.fetchMetadata(
 if (response.status === 'ready') {
   // response.data.image is populated.
 } else {
-  // status === 'pending' — render response.data.name / sourceImageUri,
-  // then call fetchMetadata again later.
+  // status === 'pending' — render response.data.name / sourceImageUri /
+  // sourceAnimationUri, then call fetchMetadata again later.
 }
 ```
 
@@ -67,7 +69,8 @@ if (response.status === 'ready') {
   message is on `.message`.
 - `EvmNowMetadataPendingError` (extends `EvmNowApiError`) — thrown when
   polling exhausts `maxWaitMs`. The last partial `TokenMetadata` is on
-  `.lastData` so you can still render `name` / `sourceImageUri`.
+  `.lastData` so you can still render `name` / `sourceImageUri` /
+  `sourceAnimationUri`.
 
 ```ts
 import {

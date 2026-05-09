@@ -20,6 +20,7 @@ describe('evmNowApi', () => {
             description: 'Example token',
             tokenUri: 'ipfs://bafy.../1',
             sourceImageUri: 'ipfs://bafy.../1.png',
+            sourceAnimationUri: 'ipfs://bafy.../1.mp4',
             image: {
               key: 'cid',
               sizes: ['sm'],
@@ -46,6 +47,7 @@ describe('evmNowApi', () => {
       description: 'Example token',
       tokenUri: 'ipfs://bafy.../1',
       sourceImageUri: 'ipfs://bafy.../1.png',
+      sourceAnimationUri: 'ipfs://bafy.../1.mp4',
       image: {
         sm: 'https://cdn.evm.now/tokens/cid_sm.webp',
       },

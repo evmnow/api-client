@@ -25,6 +25,7 @@ interface TokenDataWire {
   description: string | null
   tokenUri: string | null
   sourceImageUri: string | null
+  sourceAnimationUri?: string | null
   image: TokenImageWire
 }
 
@@ -91,6 +92,7 @@ export function createTokenApi(client: ApiClient): TokenApi {
       description: data.description,
       tokenUri: data.tokenUri,
       sourceImageUri: data.sourceImageUri,
+      sourceAnimationUri: data.sourceAnimationUri ?? null,
       image: expandImage(data.image),
     }
   }

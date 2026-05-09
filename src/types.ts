@@ -13,6 +13,7 @@ export interface TokenMetadata {
   description: string | null
   tokenUri: string | null
   sourceImageUri: string | null
+  sourceAnimationUri: string | null
   image: TokenImage | null
 }
 

@@ -1,5 +1,12 @@
 # @evmnow/api-client
 
+## 0.3.1
+
+### Patch Changes
+
+- [`f3095e5`](https://github.com/evmnow/api-client/commit/f3095e51b45fae5899aaa8df74a88b91d613dfb4) Thanks [@jwahdatehagh](https://github.com/jwahdatehagh)! - Expose `sourceAnimationUri` on token metadata responses when the API provides
+  it.
+
 ## 0.3.0
 
 ### Minor Changes

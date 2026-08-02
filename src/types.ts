@@ -13,7 +13,12 @@ export interface TokenMetadata {
   description: string | null
   tokenUri: string | null
   sourceImageUri: string | null
+  /** MIME type of `sourceImageUri`, e.g. `image/png` or `image/gif`. Lets
+   * consumers tell an animated raster (gif/apng) apart from a still image
+   * when the URI has no file extension (arweave/ipfs hashes). */
+  sourceImageMediaType: string | null
   sourceAnimationUri: string | null
+  sourceAnimationMediaType: string | null
   image: TokenImage | null
 }
 

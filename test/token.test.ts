@@ -132,9 +132,29 @@ describe('token.metadata', () => {
       description: 'desc',
       tokenUri: 'ipfs://t/1',
       sourceImageUri: 'ipfs://i/1.png',
+      sourceImageMediaType: null,
       sourceAnimationUri: 'ipfs://a/1.mp4',
+      sourceAnimationMediaType: null,
       image: null,
     })
+  })
+
+  it('surfaces source media types and defaults them to null', async () => {
+    const { fetcher } = queueResponses({
+      status: 'ready',
+      data: {
+        ...readyData,
+        sourceImageUri: 'ar://hash-without-extension',
+        sourceImageMediaType: 'image/gif',
+      },
+    })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    const token = await api.token.metadata(CONTRACT, 1)
+
+    expect(token.sourceImageMediaType).toBe('image/gif')
+    // Omitted by the wire response → normalised to null, never undefined.
+    expect(token.sourceAnimationMediaType).toBeNull()
   })
 
   it('throws EvmNowApiError when status is error', async () => {

@@ -1,5 +1,11 @@
 # @evmnow/api-client
 
+## 0.3.2
+
+### Patch Changes
+
+- [`7935367`](https://github.com/evmnow/api-client/commit/79353672bf0cd35dcef136d85b348cf19a6d0650) Thanks [@jwahdatehagh](https://github.com/jwahdatehagh)! - Add `sourceImageMediaType` and `sourceAnimationMediaType` to token metadata
+
 ## 0.3.1
 
 ### Patch Changes

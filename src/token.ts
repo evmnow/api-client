@@ -6,6 +6,8 @@ import type {
   TokenMetadataFetchOptions,
   TokenMetadataOptions,
   TokenMetadataResponse,
+  TokenMintFetchOptions,
+  TokenMintInfo,
 } from './types.js'
 
 interface TokenImageReadyWire {
@@ -72,6 +74,17 @@ export interface TokenApi {
     tokenId: string | number | bigint,
     options?: TokenMetadataOptions,
   ): Promise<TokenMetadata>
+
+  /**
+   * Resolve the true on-chain mint (first Transfer from the zero address) for
+   * an ERC-721/1155 token. Throws `EvmNowApiError` with `status === 404` when
+   * the contract is not an NFT or no mint can be found on chain.
+   */
+  mint(
+    contractAddress: string,
+    tokenId: string | number | bigint,
+    options?: TokenMintFetchOptions,
+  ): Promise<TokenMintInfo>
 }
 
 export function createTokenApi(client: ApiClient): TokenApi {
@@ -119,8 +132,21 @@ export function createTokenApi(client: ApiClient): TokenApi {
     return { status: wire.status, data: transform(wire.data) }
   }
 
+  async function mint(
+    contractAddress: string,
+    tokenId: string | number | bigint,
+    options: TokenMintFetchOptions = {},
+  ): Promise<TokenMintInfo> {
+    throwIfAborted(options.signal)
+
+    const path = `/tokens/${contractAddress}/${tokenId.toString()}/mint`
+    const wire = await client.get<{ data: TokenMintInfo }>(path)
+    return wire.data
+  }
+
   return {
     fetchMetadata,
+    mint,
 
     async metadata(contractAddress, tokenId, options = {}) {
       const {

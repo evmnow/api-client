@@ -363,3 +363,50 @@ describe('token.fetchMetadata', () => {
     expect(callCount()).toBe(0)
   })
 })
+
+describe('token.mint', () => {
+  const mintData = {
+    contractAddress: CONTRACT,
+    tokenId: '511',
+    tokenStandard: 721 as const,
+    mintBlock: '16400000',
+    mintedAt: '1673000000',
+    mintTxHash: '0xabc',
+  }
+
+  it('unwraps the mint payload and hits the mint path', async () => {
+    const { fetcher, calls, callCount } = queueResponses({ data: mintData })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    const mint = await api.token.mint(CONTRACT, 511)
+
+    expect(callCount()).toBe(1)
+    expect(calls[0].url).toContain(`/tokens/${CONTRACT}/511/mint`)
+    expect(mint).toEqual(mintData)
+  })
+
+  it('throws EvmNowApiError with status 404 when no mint is found', async () => {
+    const fetcher = async () =>
+      new Response(JSON.stringify({ message: 'Mint not found for token' }), {
+        status: 404,
+      })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+
+    await expect(api.token.mint(CONTRACT, 511)).rejects.toMatchObject({
+      name: 'EvmNowApiError',
+      status: 404,
+    } satisfies Partial<EvmNowApiError>)
+  })
+
+  it('rejects when the signal is already aborted', async () => {
+    const { fetcher, callCount } = queueResponses({ data: mintData })
+    const api = evmNowApi({ key: 'k', fetch: fetcher })
+    const controller = new AbortController()
+    controller.abort()
+
+    await expect(
+      api.token.mint(CONTRACT, 511, { signal: controller.signal }),
+    ).rejects.toMatchObject({ name: 'AbortError' })
+    expect(callCount()).toBe(0)
+  })
+})

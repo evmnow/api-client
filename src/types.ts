@@ -22,6 +22,21 @@ export interface TokenMetadata {
   image: TokenImage | null
 }
 
+export interface TokenMintInfo {
+  contractAddress: string
+  tokenId: string
+  tokenStandard: 721 | 1155
+  /** Block number of the mint (first Transfer from the zero address). */
+  mintBlock: string
+  /** Unix timestamp (seconds) of the mint block. */
+  mintedAt: string
+  mintTxHash: string | null
+}
+
+export interface TokenMintFetchOptions {
+  signal?: AbortSignal
+}
+
 export type TokenMetadataResponse =
   | { status: 'ready'; data: TokenMetadata }
   | { status: 'pending'; data: TokenMetadata }

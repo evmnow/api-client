@@ -21,4 +21,6 @@ export type {
   TokenMetadataFetchOptions,
   TokenMetadataOptions,
   TokenMetadataResponse,
+  TokenMintFetchOptions,
+  TokenMintInfo,
 } from './types.js'
